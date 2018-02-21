@@ -7,13 +7,14 @@ user_data: |
           TOWER_ADDRESS={{ tower_address }}
           HOST_CONFIG_KEY={{ host_config_key }}
           TEMPLATE_ID={{ template_id }}
-            
-          
+          TOWER_PUBLIC_KEY= {{ tower_public_key }}
+           
+          echo $TOWER_PUBLIC_KEY >> /root/.ssh/authorized_keys
           retry_attempts=10
           attempt=0
           while [[ $attempt -lt $retry_attempts ]]
           do
-            status_code=`curl -k -s -i --data "host_config_key=$HOST_CONFIG_KEY" https://$TOWER_ADDRESS/api/v1/job_templates/$TEMPLATE_ID/callback/ | head -n 1 | awk '{print $2}'`
+            status_code=`curl -k -s -i --data "host_config_key=$HOST_CONFIG_KEY" https://$TOWER_ADDRESS:443/api/v2/job_templates/$TEMPLATE_ID/callback/ | head -n 1 | awk '{print $2}'`
             if [[ $status_code == 202 ]]
               then
               exit 0
